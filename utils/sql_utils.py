@@ -1,0 +1,1 @@
+def format_sql(sql): return sql.replace('  ',' ')
