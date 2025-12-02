@@ -1,9 +1,17 @@
-
 import json
+
 class SchemaLoader:
-    def __init__(self, schema):
-        self.schema = schema
-    @classmethod
-    def from_json(cls, path):
+    @staticmethod
+    def from_dict(schema: dict):
+        tables = list(schema.keys())
+        columns = {
+            table: set(meta["columns"])
+            for table, meta in schema.items()
+        }
+        fks = {table: meta["foreign_keys"] for table, meta in schema.items()}
+        return {"tables": tables, "columns": columns, "foreign_keys": fks, "raw": schema}
+
+    @staticmethod
+    def from_json(path: str):
         with open(path) as f:
-            return cls(json.load(f))
+            return SchemaLoader.from_dict(json.load(f))

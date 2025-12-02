@@ -1,11 +1,16 @@
-
+from schema.sample_schema import SAMPLE_SCHEMA
+from schema.schema_loader import SchemaLoader
+from schema.graph_builder import SchemaGraph
 from fsm.sql_fsm import SQLStateMachine
-from fsm.transitions import TRANSITIONS
-from generation.sqlformer_engine import SQLFormerEngine
 from generation.logits_processor import LogitsProcessor
-from models.model_loader import DummyModel
-fsm = SQLStateMachine(TRANSITIONS)
-logits = LogitsProcessor(fsm, None)
-model = DummyModel()
-engine = SQLFormerEngine(model, fsm, logits)
+from generation.sqlformer_engine import SQLFormerEngine
+from models.model_loader import SQLFormerModel
+
+schema_info = SchemaLoader.from_dict(SAMPLE_SCHEMA)
+graph = SchemaGraph(SAMPLE_SCHEMA)
+fsm = SQLStateMachine()
+logits = LogitsProcessor(fsm, graph, schema_info)
+
+model = SQLFormerModel()  # meta-llama/Meta-Llama-3-8B-Instruct
+engine = SQLFormerEngine(model, fsm, logits, schema_info)
 print(engine.generate("get users"))
