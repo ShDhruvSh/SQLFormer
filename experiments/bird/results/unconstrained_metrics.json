@@ -1,0 +1,27 @@
+{
+  "total": 300,
+  "valid": 176,
+  "exec_correct": 50,
+  "validity_rate": 58.67,
+  "exec_accuracy": 16.67,
+  "syntax_errors": 15,
+  "schema_errors": 103,
+  "execution_errors": 6,
+  "by_difficulty": {
+    "simple": {
+      "total": 169,
+      "valid": 105,
+      "exec_correct": 37
+    },
+    "moderate": {
+      "total": 98,
+      "valid": 52,
+      "exec_correct": 9
+    },
+    "challenging": {
+      "total": 33,
+      "valid": 19,
+      "exec_correct": 4
+    }
+  }
+}

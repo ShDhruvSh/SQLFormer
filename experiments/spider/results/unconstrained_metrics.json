@@ -1,0 +1,20 @@
+{
+  "total": 300,
+  "valid": 291,
+  "exec_correct": 124,
+  "exact_match": 30,
+  "validity_rate": 97.0,
+  "exec_accuracy": 41.33,
+  "exact_match_rate": 10.0,
+  "syntax_errors": 9,
+  "schema_errors": 0,
+  "execution_errors": 0,
+  "by_difficulty": {
+    "unknown": {
+      "total": 300,
+      "valid": 291,
+      "exec_correct": 124,
+      "exact_match": 30
+    }
+  }
+}

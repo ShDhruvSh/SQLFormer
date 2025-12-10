@@ -23,18 +23,34 @@ class SQLFormerModel:
         if device is not None:
             self.device = torch.device(device)
         else:
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            # Auto-detect best available device
+            if torch.cuda.is_available():
+                self.device = torch.device("cuda")
+            elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+                self.device = torch.device("mps")
+            else:
+                self.device = torch.device("cpu")
 
         self.tokenizer: PreTrainedTokenizerFast = AutoTokenizer.from_pretrained(
             model_name,
             use_fast=True
         )
 
+        # Set dtype based on device
+        if self.device.type in ("cuda", "mps"):
+            dtype = torch.float16
+        else:
+            dtype = torch.float32
+
         self.model: PreTrainedModel = AutoModelForCausalLM.from_pretrained(
             model_name,
-            torch_dtype=torch.float16 if self.device.type == "cuda" else torch.float32,
+            torch_dtype=dtype,
             device_map="auto" if self.device.type == "cuda" else None,
         )
+
+        # Move to device if not using device_map
+        if self.device.type != "cuda":
+            self.model = self.model.to(self.device)
 
         self.model.eval()
         self.vocab_size = self.model.config.vocab_size
