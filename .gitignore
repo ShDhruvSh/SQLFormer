@@ -3,3 +3,9 @@ experiments/*/data/
 *.db
 __pycache__/
 .DS_Store
+
+# Experiment outputs
+experiments/*/predictions/
+experiments/*/results/
+predictions/
+results/
