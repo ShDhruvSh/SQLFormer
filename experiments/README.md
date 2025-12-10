@@ -2,6 +2,30 @@
 
 This directory contains experiment runners for evaluating SQLFormer on Spider and BIRD benchmarks.
 
+## Data Setup
+
+The experiment data files (databases and datasets) are not included in the git repository due to their large size. You need to download them separately:
+
+### Spider Dataset
+1. Download from: https://yale-lily.github.io/spider
+2. Extract to `experiments/spider/data/`
+
+### BIRD Dataset
+1. Download from: https://bird-bench.github.io/
+2. Extract to `experiments/bird/data/`
+
+The expected directory structure after setup:
+```
+experiments/
+├── spider/data/spider/
+│   ├── database/          # Spider databases
+│   ├── dev.json
+│   └── tables.json
+└── bird/data/bird/dev/
+    ├── dev_databases/     # BIRD databases
+    └── dev.json
+```
+
 ## Quick Start
 
 ### Run All Experiments (Recommended)

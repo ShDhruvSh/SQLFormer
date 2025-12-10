@@ -1,63 +1,28 @@
-"""
-Unconstrained SQL Generator
-
-This approach uses standard LLM generation without any constraints.
-Serves as the baseline for comparison.
-"""
-
 import re
 from typing import Optional
 
 
 class UnconstrainedSQLGenerator:
-    """
-    Generate SQL using unconstrained LLM generation.
-
-    This is the baseline approach that lets the model generate freely
-    without any schema constraints or validation.
-    """
 
     def __init__(self, model, schema: dict):
-        """
-        Initialize unconstrained generator.
-
-        Args:
-            model: SQLFormerModel instance
-            schema: Schema dict (not used, kept for API consistency)
-        """
         self.model = model
         self.schema = schema
 
     def generate(self, prompt: str, max_new_tokens: int = 150) -> str:
-        """
-        Generate SQL with unconstrained LLM.
-
-        Args:
-            prompt: Full prompt including question and schema info
-            max_new_tokens: Maximum tokens to generate
-
-        Returns:
-            Generated SQL query
-        """
         if self.model is None:
             return self._generate_fallback()
 
-        # Generate SQL without constraints
-        raw_output = self.model.generate_unconstrained(
-            prompt,
-            max_new_tokens=max_new_tokens
-        )
+        # standard generation without constraints
+        ids = self.model.encode(prompt)
+        output = self.model.model.generate(ids, max_new_tokens=max_new_tokens)
+        raw_output = self.model.decode(output[0])
 
-        # Extract and clean SQL
-        sql = self._extract_sql(raw_output)
+        return self._extract_sql(raw_output)
 
-        return sql
-
+    # pull out sql from model output
     def _extract_sql(self, generated_text: str) -> str:
-        """Extract SQL query from generated text."""
         text = generated_text.strip()
 
-        # Remove markdown code blocks
         if '```sql' in text.lower():
             match = re.search(r'```sql\s*(.*?)\s*```', text, re.DOTALL | re.IGNORECASE)
             if match:
@@ -67,7 +32,6 @@ class UnconstrainedSQLGenerator:
             if match:
                 text = match.group(1).strip()
 
-        # Find SELECT statement
         if text.upper().startswith('SELECT'):
             end_markers = [';', '\n\n', '\n--', '\nQuestion:', '\n#', '\nExplanation:']
             end_pos = len(text)
@@ -77,7 +41,6 @@ class UnconstrainedSQLGenerator:
                     end_pos = min(end_pos, pos)
             return text[:end_pos].strip()
 
-        # Try to find SELECT in text
         select_pos = text.upper().find('SELECT')
         if select_pos >= 0:
             remaining = text[select_pos:]
@@ -92,18 +55,15 @@ class UnconstrainedSQLGenerator:
         return text
 
     def _generate_fallback(self) -> str:
-        """Generate fallback SQL when no model available."""
         if self.schema and "tables" in self.schema and self.schema["tables"]:
-            table = self.schema["tables"][0]
-            return f"SELECT * FROM {table}"
+            return f"SELECT * FROM {self.schema['tables'][0]}"
         return "SELECT *"
 
 
 class UnconstrainedSQLFormerEngine:
-    """Engine wrapper for unconstrained generation."""
 
     def __init__(self, model, schema: dict):
         self.generator = UnconstrainedSQLGenerator(model, schema)
 
-    def generate(self, prompt: str) -> str:
-        return self.generator.generate(prompt)
+    def generate(self, prompt: str, max_new_tokens: int = 1024) -> str:
+        return self.generator.generate(prompt, max_new_tokens=max_new_tokens)

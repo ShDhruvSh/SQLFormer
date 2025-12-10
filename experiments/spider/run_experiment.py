@@ -212,7 +212,7 @@ SQL:"""
         self,
         max_examples: Optional[int] = None,
         output_file: Optional[str] = None,
-        max_new_tokens: int = 128
+        max_new_tokens: int = 1024
     ) -> List[str]:
         """
         Run unconstrained LLM generation baseline.
@@ -243,7 +243,7 @@ SQL:"""
 
                 # Use unconstrained generator for cleaner code
                 engine = UnconstrainedSQLFormerEngine(self.model, {})
-                predicted_sql = engine.generate(prompt)
+                predicted_sql = engine.generate(prompt, max_new_tokens=max_new_tokens)
                 predictions.append(predicted_sql)
 
             except Exception as e:

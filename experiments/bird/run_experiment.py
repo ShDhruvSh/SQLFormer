@@ -263,7 +263,7 @@ SQL:"""
         self,
         max_examples: Optional[int] = None,
         output_file: Optional[str] = None,
-        max_new_tokens: int = 256
+        max_new_tokens: int = 1024
     ) -> List[str]:
         """
         Run unconstrained LLM generation baseline.
